@@ -1,4 +1,5 @@
 export default function parser (content) {
+    let time = new Date();
     let result;
     let contentArray = content.split("");
     if (contentArray[0] == '{') {
@@ -10,7 +11,7 @@ export default function parser (content) {
     } else {
         console.error("not a valid json");
     }
-    console.log(JSON.stringify(result))
+    console.log(new Date() - time)
     return result;
 }
 
@@ -26,9 +27,10 @@ function objectJsonParser (contentArray) {
     let counter = 0;
     let prevChar = '';
     let stackLock = false;
-    let valueEnd = false;
+    let valueEnd = true;
     let isPushedValue = false;
     let isSemiPush = false;
+    let isArrayValue = false;
     for (char of contentArray) {
         // if {, push
         if (char == '{') {
@@ -47,9 +49,10 @@ function objectJsonParser (contentArray) {
                 valueEnd = false;
                 isSemiPush = false;
                 stack = []
-            } else if (char == ',' && counter == 1) {
+            } else if (char == ',' && counter == 1 && !isArrayValue) {
                 object.children = objectJsonParser(stack.join("").trim());
                 object.value = stack.delEmpty().join("").trim();
+                object.type = judgeType(stack.delEmpty());
                 valueEnd = true;
                 // result.push({...object});
                 result.push(JSON.parse(JSON.stringify(object)));
@@ -60,6 +63,7 @@ function objectJsonParser (contentArray) {
                 if (!valueEnd) {
                     object.children = objectJsonParser(stack.join("").trim());
                     object.value = stack.delEmpty().join("").trim();
+                    object.type = judgeType(stack.delEmpty());
                     valueEnd = true;
                 }
                 stackLock = true;
@@ -78,7 +82,13 @@ function objectJsonParser (contentArray) {
                         commentStack = [];
                     }
                 }
-            } 
+                if (!valueEnd) {
+                    stack.push(char)
+                }
+            } else if(char == '[' || char == ']') {
+                stack.push(char)
+                isArrayValue = !isArrayValue;
+            }
             else {
                 if (!stackLock) {
                     stack.push(char)
@@ -93,6 +103,7 @@ function objectJsonParser (contentArray) {
     if (!valueEnd) {
         object.children = objectJsonParser(stack.join("").trim());
         object.value = stack.delEmpty().join("").trim();
+        object.type = judgeType(stack.delEmpty());
         valueEnd = true;
     } 
     // result.push({...object});
@@ -109,4 +120,23 @@ function objectJsonParser (contentArray) {
 
 Array.prototype.delEmpty = function () {
     return this.filter( t => t!='\n' && t != ' ');
+}
+
+function judgeType(stack) {
+    console.log('judgeType', stack)
+    let result;
+    if (stack[0] == '"') {
+        result = 'string'
+    } else if (stack[0] == '{') {
+        result = 'object'
+    } else if (stack[0] == '[') {
+        result = 'array'
+    } else {
+        if (stack.join("") == 'false' || stack.join("") == 'true') {
+            result = 'bool'
+        } else {
+            result = 'number'
+        }
+    }
+    return result
 }
