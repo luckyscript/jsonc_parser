@@ -17,7 +17,8 @@ export default function parser (content) {
 
 function objectJsonParser (contentArray) {
     if(contentArray.indexOf(':') == -1) {
-        return contentArray.toString();
+        console.log("++___++++_-----", contentArray)
+        return contentArray.split('"').join('');
     }
     let char = '';
     let stack = [];
@@ -48,6 +49,7 @@ function objectJsonParser (contentArray) {
                 object.key = stack.join("").trim();
                 valueEnd = false;
                 isSemiPush = false;
+                isPushedValue = false;
                 stack = []
             } else if (char == ',' && counter == 1 && !isArrayValue) {
                 object.children = objectJsonParser(stack.join("").trim());
@@ -122,8 +124,12 @@ Array.prototype.delEmpty = function () {
     return this.filter( t => t!='\n' && t != ' ');
 }
 
+Array.prototype.delElement = function (i) {
+    return this.filter( t => t != i);
+}
+
+
 function judgeType(stack) {
-    console.log('judgeType', stack)
     let result;
     if (stack[0] == '"') {
         result = 'string'
