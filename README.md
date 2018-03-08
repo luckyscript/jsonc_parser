@@ -19,5 +19,6 @@ parser(`{
 // [{"key":"a","children":"\"b\"","value":"\"b\"","type":"string","description":"comment"}]
 
 ## TODO:
-1. parser ArrayLike json
-2. comment parser bugs fix
+1. parser ArrayLike json [finish]
+2. comment parser bugs fix [finish]
+3. support mutiline comments
