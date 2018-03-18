@@ -11,6 +11,7 @@ let array2 = `[{"a":1},{"b":"c"}]`
             
 let json4 = `{"a":{}}`
 let json5 = `{"a":"//"}`
+let json6 = `{"a":"\"test\""}`
 describe('parser', function() {
     // assert.equal()
     it('should equal {} -> []', function() {
@@ -33,5 +34,8 @@ describe('parser', function() {
     })
     it('shoult equal', () => {
         assert.equal(JSON.stringify(parser.parser(json5)), '[{"key":"a","children":[],"value":"\\"//\\"","type":"string"}]')
+    })
+    it('shoult equal', () => {
+        assert.equal(JSON.stringify(parser.parser(json6)), '[{"key":"a","children":[],"value":"\\"\\"test\\"\\"","type":"string"}]')
     })
 })
