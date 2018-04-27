@@ -34,6 +34,7 @@ let parse_object = (value:string):Array<Tree>|any => {
     let inKey:boolean = false, inValue: boolean = false, inComment:boolean = false;
     let nextType = 'key';
     let stack:Array<string> = [];
+
     
     // skip whitespace
     pointer = skip_whitespace(value, pointer);
@@ -42,7 +43,7 @@ let parse_object = (value:string):Array<Tree>|any => {
         result = [];
         return result;
     }
-    for(;pointer < len;pointer++) {
+    for(let depth = 1;pointer < len && depth !== 0;pointer++) {
         // key start
         let char:string = value[pointer];
         if(inKey) {
@@ -104,6 +105,8 @@ let parse_object = (value:string):Array<Tree>|any => {
              result.pop();
              result.push(JSON.parse(JSON.stringify(tree)));
         }
+        if(char == '{') depth++;
+        if(char == '}') depth--;
     }
     return {
         value: result,
@@ -214,11 +217,11 @@ let parse_number = (value:string) => {
 }
 
 let check_valid = function(json:string):boolean {
-    try {
-        JSON.parse(sjc(json));
-    } catch(e) {
-        return false;
-    }
+    // try {
+    //     JSON.parse(sjc(json));
+    // } catch(e) {
+    //     return false;
+    // }
     return true;
 }
 
