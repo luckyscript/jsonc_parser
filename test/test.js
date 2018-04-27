@@ -3,8 +3,10 @@ let {parse} = require('../build/index');
 
 let json1 = `{
     "a": null,
-    "v": -123,
-    "aad": [1,2,3]
+    "v": "-123","string": "xxx", //test
+    "aad": [1,2,3],"object": {
+        "a": "b" /*test1*/
+    }
 }`
 describe('parser', function() {
     assert.equal()

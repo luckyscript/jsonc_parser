@@ -3,19 +3,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var sjc = require("strip-json-comments");
 var parse_value_literal_1 = require("./parse_value_literal");
 var parse_value_string_1 = require("./parse_value_string");
+var skip_whitespace_1 = require("./skip_whitespace");
 function parse(json) {
     if (!check_valid(json))
         throw new Error("Not valid JSON");
     if (json[0] === '{') {
-        return parse_object(json);
+        return parse_object(json).value;
     }
 }
-var parse_object = function (json) {
-    var len = json.length;
+var parse_object = function (value) {
+    var len = value.length;
     var pointer = 1;
     var tree = {
         key: '',
         value: '',
+        comment: '',
         children: [],
         type: 'Object'
     };
@@ -24,14 +26,14 @@ var parse_object = function (json) {
     var nextType = 'key';
     var stack = [];
     // skip whitespace
-    pointer = skip_whitespace(json, pointer);
-    if (json[pointer] == '}') {
+    pointer = skip_whitespace_1.default(value, pointer);
+    if (value[pointer] == '}') {
         result = [];
         return result;
     }
     for (; pointer < len; pointer++) {
         // key start
-        var char = json[pointer];
+        var char = value[pointer];
         if (inKey) {
             if (char == '"') {
                 // key end
@@ -39,7 +41,7 @@ var parse_object = function (json) {
                 nextType = 'value';
                 tree.key = stack.join("");
                 stack = [];
-                pointer = skip_whitespace(json, pointer);
+                pointer = skip_whitespace_1.default(value, pointer);
             }
             else {
                 stack.push(char);
@@ -53,35 +55,68 @@ var parse_object = function (json) {
                 key: '',
                 value: '',
                 children: [],
-                type: 'Object'
+                type: 'Object',
+                comment: ''
             };
         }
         if (inValue) {
-            var val = parse_value(json.substr(pointer));
-            console.log(val);
+            var val = parse_value(value.substr(pointer));
             pointer += val.len;
-            tree.value = val.value;
+            if (val.type == 'Object') {
+                tree.children = val.value;
+            }
+            else {
+                tree.value = val.value;
+            }
             tree.type = val.type;
             result.push(JSON.parse(JSON.stringify(tree)));
             inValue = false;
             nextType = 'key';
         }
         if (char == ':' && !inValue && !inComment) {
-            pointer = skip_whitespace(json, pointer);
+            pointer = skip_whitespace_1.default(value, pointer);
             inValue = true;
         }
-        // if(char == ','  && !inValue && !inComment) {
-        // }
+        if (char == '/' && value[pointer - 1] == '/' && !inValue && !inKey) {
+            // sigle line comment start
+            var comment = parse_single_comment(value.substr(pointer));
+            pointer += comment.len;
+            tree.comment = comment.comment;
+            result.pop();
+            result.push(JSON.parse(JSON.stringify(tree)));
+        }
+        if (char == '*' && value[pointer - 1] == '/' && !inValue && !inKey) {
+            // sigle line comment start
+            var comment = parse_multi_comment(value.substr(pointer));
+            pointer += comment.len;
+            tree.comment = comment.comment;
+            result.pop();
+            result.push(JSON.parse(JSON.stringify(tree)));
+        }
     }
-    return result;
+    return {
+        value: result,
+        len: pointer + 1,
+        type: 'Object'
+    };
 };
-var skip_whitespace = function (json, pointer) {
-    while (json[pointer] == ' ' || json[pointer] == '\t' || json[pointer] == '\n' || json[pointer] == '\r') {
-        pointer++;
-    }
-    return pointer;
+var parse_single_comment = function (value) {
+    var p = 0;
+    for (; value[p] != '\n'; p++)
+        ;
+    return {
+        comment: value.substr(1, p - 1),
+        len: p + 1
+    };
 };
-var parse_comment = function () {
+var parse_multi_comment = function (value) {
+    var p = 0;
+    for (; !(value[p] == '/' && value[p - 1] == '*'); p++)
+        ;
+    return {
+        comment: value.substr(1, p - 2),
+        len: p + 1
+    };
 };
 var parse_value = function (value) {
     value = value.trim();
@@ -110,7 +145,7 @@ var parse_value = function (value) {
 var parse_value_array = function (value) {
     var p = 0;
     p++;
-    p = skip_whitespace(value, p);
+    p = skip_whitespace_1.default(value, p);
     if (value[p] == ']') {
         return {
             value: '[]',
@@ -118,9 +153,7 @@ var parse_value_array = function (value) {
             len: p + 1
         };
     }
-    console.log("this");
     for (var depth = 1; depth !== 0; p++) {
-        console.log("dep", depth);
         if (value[p] == '[')
             depth++;
         if (value[p] == ']')

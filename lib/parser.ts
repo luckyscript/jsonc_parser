@@ -1,28 +1,32 @@
 import * as sjc from "strip-json-comments";
 import parse_value_literal from './parse_value_literal';
 import parse_value_string from './parse_value_string';
+import skip_whitespace from './skip_whitespace';
+
 
 interface Tree {
     key: string,
     value: string,
     children: Array<any>,
-    type: string
+    type: string,
+    comment: string
 }
 
 function parse (json:string):any {
     if(!check_valid(json))
         throw new Error("Not valid JSON");
     if(json[0] === '{') {
-        return parse_object(json)
+        return parse_object(json).value;
     }
 }
 
-let parse_object = (json:string):Array<Tree>|any => {
-    let len:number = json.length;
+let parse_object = (value:string):Array<Tree>|any => {
+    let len:number = value.length;
     let pointer:number = 1;
     let tree:Tree = {
         key: '',
         value: '',
+        comment: '',
         children: [],
         type: 'Object'
     }
@@ -32,15 +36,15 @@ let parse_object = (json:string):Array<Tree>|any => {
     let stack:Array<string> = [];
     
     // skip whitespace
-    pointer = skip_whitespace(json, pointer);
+    pointer = skip_whitespace(value, pointer);
    
-    if(json[pointer] == '}') {
+    if(value[pointer] == '}') {
         result = [];
         return result;
     }
     for(;pointer < len;pointer++) {
         // key start
-        let char:string = json[pointer];
+        let char:string = value[pointer];
         if(inKey) {
             if(char == '"') {
                 // key end
@@ -48,7 +52,7 @@ let parse_object = (json:string):Array<Tree>|any => {
                 nextType = 'value';
                 tree.key = stack.join("");
                 stack = [];
-                pointer = skip_whitespace(json, pointer);
+                pointer = skip_whitespace(value, pointer);
             } else {
                 stack.push(char);
             }
@@ -61,40 +65,72 @@ let parse_object = (json:string):Array<Tree>|any => {
                 key: '',
                 value: '',
                 children: [],
-                type: 'Object'
+                type: 'Object',
+                comment: ''
             };
         }
         if(inValue) {
-            let val = parse_value(json.substr(pointer));
-            console.log(val)
+            let val = parse_value(value.substr(pointer));
             pointer += val.len;
-            tree.value = val.value;
+            if(val.type == 'Object') {
+                tree.children = val.value
+            } else {
+                tree.value = val.value;
+            }
             tree.type = val.type;
             result.push(JSON.parse(JSON.stringify(tree)));
             inValue = false;
             nextType = 'key';
         }
         if(char == ':' && !inValue && !inComment) {
-            pointer = skip_whitespace(json, pointer);
+            pointer = skip_whitespace(value, pointer);
             inValue = true;
         }
-        // if(char == ','  && !inValue && !inComment) {
+        if(char == '/' && value[pointer - 1] == '/' && !inValue && !inKey) {
+            // sigle line comment start
+            let comment = parse_single_comment(value.substr(pointer));
 
-        // }
+            pointer += comment.len;
+            tree.comment = comment.comment;
+            result.pop();
+            result.push(JSON.parse(JSON.stringify(tree)));
+        }
+        if(char == '*' && value[pointer - 1] == '/' && !inValue && !inKey) {
+             // sigle line comment start
+             let comment = parse_multi_comment(value.substr(pointer));
+
+             pointer += comment.len;
+             tree.comment = comment.comment;
+             result.pop();
+             result.push(JSON.parse(JSON.stringify(tree)));
+        }
     }
-    return result;
+    return {
+        value: result,
+        len: pointer + 1,
+        type: 'Object'
+    };
 
 }
 
 
-let skip_whitespace = (json:string, pointer:number):number => {
-    while(json[pointer] == ' '|| json[pointer] == '\t' || json[pointer] == '\n' || json[pointer] == '\r') {
-        pointer++;
+
+let parse_single_comment = function (value: string) {
+    let p = 0
+    for (;value[p] != '\n'; p++);
+    return {
+        comment: value.substr(1, p-1),
+        len: p+1
     }
-    return pointer;
 }
 
-let parse_comment = function () {
+let parse_multi_comment = function (value: string) {
+    let p = 0
+    for (;!(value[p] == '/' && value[p-1] == '*'); p++);
+    return {
+        comment: value.substr(1, p-2),
+        len: p+1
+    }
 }
 
 let parse_value = function (value: string) {
@@ -133,9 +169,7 @@ let parse_value_array = (value:string) => {
             len: p+1
         }
     }
-    console.log("this")
     for (let depth = 1;depth !== 0;p++) {
-        console.log("dep",depth)
         if(value[p] == '[')
             depth++;
         if(value[p] == ']')
