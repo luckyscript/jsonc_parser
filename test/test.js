@@ -1,7 +1,7 @@
 let assert = require('assert');
 let {parse} = require('../build/index');
 
-let json1 = `{
+let json1 = JSON.stringify({
 	"errno": 0,
 	"errmsg": "",
 	"data": {
@@ -58,7 +58,7 @@ let json1 = `{
 			"entireUrl": "http://11.com/test4"
 		}
 	}
-}`
+})
 describe('parser', function() {
     assert.equal()
     it('should equal {} -> []', function() {

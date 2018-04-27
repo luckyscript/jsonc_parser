@@ -217,11 +217,11 @@ let parse_number = (value:string) => {
 }
 
 let check_valid = function(json:string):boolean {
-    // try {
-    //     JSON.parse(sjc(json));
-    // } catch(e) {
-    //     return false;
-    // }
+    try {
+        JSON.parse(sjc(json));
+    } catch(e) {
+        return false;
+    }
     return true;
 }
 
