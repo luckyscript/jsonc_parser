@@ -34,4 +34,3 @@ var parse_value_literal = function (value, symbol) {
     }
 };
 exports.default = parse_value_literal;
-//# sourceMappingURL=parse_value_literal.js.map

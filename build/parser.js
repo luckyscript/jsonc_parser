@@ -29,7 +29,7 @@ var parse_object = function (value) {
     pointer = skip_whitespace_1.default(value, pointer);
     if (value[pointer] == '}') {
         result = [];
-        return result;
+        return { value: result };
     }
     for (var depth = 1; pointer < len && depth !== 0; pointer++) {
         // key start
@@ -219,4 +219,3 @@ var ISDIGIT1TO9 = function (v) {
     return v <= '9' && v >= '1';
 };
 exports.default = parse;
-//# sourceMappingURL=parser.js.map

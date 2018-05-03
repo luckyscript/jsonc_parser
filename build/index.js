@@ -7,4 +7,3 @@ function parse(json) {
     return parser_1.default(jsonText);
 }
 exports.parse = parse;
-//# sourceMappingURL=index.js.map

@@ -7,4 +7,3 @@ var skip_whitespace = function (json, pointer) {
     return pointer;
 };
 exports.default = skip_whitespace;
-//# sourceMappingURL=skip_whitespace.js.map
