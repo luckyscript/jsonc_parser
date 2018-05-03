@@ -2,10 +2,10 @@
   "name": "json_with_comments_parser",
   "version": "1.0.0",
   "description": "A parser parse Json_with_comment to AST",
-  "main": "parser.js",
+  "main": "./build/parser.js",
   "scripts": {
     "test": "tsc & mocha",
-    "run": "tsc"
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -27,36 +27,6 @@
   "devDependencies": {
     "mocha": "^5.0.1",
     "travis": "^0.1.1",
-    "babel-core": "^6.x.x",
-    "babel-plugin-transform-decorators": "^6.x.x",
-    "babel-plugin-transform-decorators-legacy": "^1.3.4",
-    "babel-plugin-transform-flow-strip-types": "^6.x.x",
-    "babel-plugin-transform-runtime": "6.x.x",
-    "babel-polyfill": "^6.x.x",
-    "babel-preset-env": "^1.4.0",
-    "babel-preset-es2015": "^6.x.x",
-    "babel-preset-es2015-loose": "^6.x.x",
-    "babel-preset-stage-1": "^6.x.x",
-    "babel-register": "^6.24.1",
-    "babel-runtime": "^6.x.x",
     "nodemon": "^1.12.5"
-  },
-  "babel": {
-    "presets": [
-      "es2015-loose",
-      "stage-1",
-      [
-        "env",
-        {
-          "targets": {
-            "node": true
-          }
-        }
-      ]
-    ],
-    "plugins": [
-      "transform-runtime",
-      "transform-decorators-legacy"
-    ]
   }
 }

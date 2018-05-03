@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var sjc = require("strip-json-comments");
 var parse_value_literal_1 = require("./parse_value_literal");
 var parse_value_string_1 = require("./parse_value_string");
 var skip_whitespace_1 = require("./skip_whitespace");
@@ -203,11 +204,12 @@ var parse_number = function (value) {
     };
 };
 var check_valid = function (json) {
-    // try {
-    //     JSON.parse(sjc(json));
-    // } catch(e) {
-    //     return false;
-    // }
+    try {
+        JSON.parse(sjc(json));
+    }
+    catch (e) {
+        return false;
+    }
     return true;
 };
 var ISDIGIT = function (v) {
