@@ -17,6 +17,9 @@ function parse (json:string):any {
         throw new Error("Not valid JSON");
     if(json[0] === '{') {
         return parse_object(json).value;
+    } else if(json[0] == '[') {
+        // array like json
+        return JSON.parse(parse_value_array(json).value);
     }
 }
 

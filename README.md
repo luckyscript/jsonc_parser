@@ -5,20 +5,20 @@
 ```
 npm install json_with_comments_parser
 
-import { parser } from 'json_with_comments_parser'
+import { parse } from 'json_with_comments_parser'
 
-parser('{"a": "b"}')
+parse('{"a": "b"}')
 ```
 
 ## examples
 
-parser(`{
+parse(`{
             "a":"b" //comment
         }`)
 
-// [{"key":"a","children":"\"b\"","value":"\"b\"","type":"string","description":"comment"}]
+// [{"key":"a","children":[],"value":"b","type":"String","comment":"comment"}]
 
 ## TODO:
-1. parser ArrayLike json [finish]
+1. parser ArrayLike json [doing]
 2. comment parser bugs fix [finish]
-3. support mutiline comments
+3. support mutiline comments [finish]

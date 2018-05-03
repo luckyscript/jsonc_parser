@@ -10,6 +10,10 @@ function parse(json) {
     if (json[0] === '{') {
         return parse_object(json).value;
     }
+    else if (json[0] == '[') {
+        // array like json
+        return JSON.parse(parse_value_array(json).value);
+    }
 }
 var parse_object = function (value) {
     var len = value.length;

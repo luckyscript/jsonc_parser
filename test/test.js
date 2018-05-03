@@ -1,8 +1,7 @@
 let assert = require('assert');
 let {parse} = require('../build/index');
 
-let json1 = `{
-}`
+let json1 = `[]`
 describe('parser', function() {
     assert.equal()
     it('should equal {} -> []', function() {
