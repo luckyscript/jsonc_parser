@@ -14,6 +14,10 @@ function parse(json) {
         // array like json
         return JSON.parse(parse_value_array(json).value);
     }
+    else {
+        // if comment is before json, throw error
+        throw new Error("unsupport input: " + json);
+    }
 }
 var parse_object = function (value) {
     var len = value.length;
@@ -29,6 +33,7 @@ var parse_object = function (value) {
     var inKey = false, inValue = false, inComment = false;
     var nextType = 'key';
     var stack = [];
+    var commentFlag = false;
     // skip whitespace
     pointer = skip_whitespace_1.default(value, pointer);
     if (value[pointer] == '}') {
@@ -46,6 +51,7 @@ var parse_object = function (value) {
                 tree.key = stack.join("");
                 stack = [];
                 pointer = skip_whitespace_1.default(value, pointer);
+                commentFlag = true;
             }
             else {
                 stack.push(char);
@@ -81,7 +87,7 @@ var parse_object = function (value) {
             pointer = skip_whitespace_1.default(value, pointer);
             inValue = true;
         }
-        if (char == '/' && value[pointer - 1] == '/' && !inValue && !inKey) {
+        if (char == '/' && value[pointer - 1] == '/' && !inValue && !inKey && commentFlag) {
             // sigle line comment start
             var comment = parse_single_comment(value.substr(pointer));
             pointer += comment.len;

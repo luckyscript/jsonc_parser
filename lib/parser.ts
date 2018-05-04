@@ -20,6 +20,9 @@ function parse (json:string):any {
     } else if(json[0] == '[') {
         // array like json
         return JSON.parse(parse_value_array(json).value);
+    } else {
+        // if comment is before json, throw error
+        throw new Error(`unsupport input: ${json}`)
     }
 }
 
@@ -37,7 +40,7 @@ let parse_object = (value:string):Array<Tree>|any => {
     let inKey:boolean = false, inValue: boolean = false, inComment:boolean = false;
     let nextType = 'key';
     let stack:Array<string> = [];
-
+    let commentFlag = false;
     
     // skip whitespace
     pointer = skip_whitespace(value, pointer);
@@ -56,6 +59,7 @@ let parse_object = (value:string):Array<Tree>|any => {
                 tree.key = stack.join("");
                 stack = [];
                 pointer = skip_whitespace(value, pointer);
+                commentFlag = true;
             } else {
                 stack.push(char);
             }
@@ -89,7 +93,7 @@ let parse_object = (value:string):Array<Tree>|any => {
             pointer = skip_whitespace(value, pointer);
             inValue = true;
         }
-        if(char == '/' && value[pointer - 1] == '/' && !inValue && !inKey) {
+        if(char == '/' && value[pointer - 1] == '/' && !inValue && !inKey && commentFlag) {
             // sigle line comment start
             let comment = parse_single_comment(value.substr(pointer));
 
