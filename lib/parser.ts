@@ -5,11 +5,11 @@ import skip_whitespace from './skip_whitespace';
 
 
 interface Tree {
-    key: string,
+    key: string|number,
     value: string,
     children: Array<any>,
     type: string,
-    comment: string
+    comment?: string
 }
 
 function parse (json:string):any {
@@ -19,7 +19,7 @@ function parse (json:string):any {
         return parse_object(json).value;
     } else if(json[0] == '[') {
         // array like json
-        return JSON.parse(parse_value_array(json).value);
+        return parse_value_array(json).children;
     } else {
         // if comment is before json, throw error
         throw new Error(`unsupport input: ${json}`)
@@ -168,6 +168,52 @@ let parse_value = function (value: string) {
 }
 
 let parse_value_array = (value:string) => {
+    let p = 0, key = 0, result = [];
+    p++;
+    p = skip_whitespace(value, p);
+    let tree:Tree = {
+        key: '',
+        value: '',
+        children: [],
+        type: ''
+    }
+    if(value[p] == ']') {
+        return {
+            value: '[]',
+            type: 'Array',
+            len: p+1
+        }
+    }
+    for (let depth = 1;depth !== 0;p++) {
+        if(value[p] == ',')
+            p++;
+        // console.log(value.substr(p))
+        // console.log(parse_value(value.substr(p)));
+        console.log(value.substr(p));
+        if(value[p] != ']') {
+            let val = parse_value(value.substr(p));
+            tree.value = val.value;
+            tree.children = val.children;
+            tree.type = val.type;
+            tree.key = key;
+            result.push(JSON.parse(JSON.stringify(tree)))
+            p+=val.len;
+        }
+        key++;
+        if(value[p] == '[')
+            depth++;
+        if(value[p] == ']')
+            depth--;
+    }
+    console.log('result' ,result);
+    return {
+        value: value.substr(0, p),
+        children: result,
+        type: 'Array',
+        len: p
+    }
+}
+let parse_value_array2 = (value:string) => {
     let p = 0;
     p++;
     p = skip_whitespace(value, p);
@@ -189,7 +235,6 @@ let parse_value_array = (value:string) => {
         type: 'Array',
         len: p+1
     }
-
 }
 let parse_number = (value:string) => {
     let p = 0;
