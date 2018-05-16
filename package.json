@@ -21,7 +21,9 @@
   },
   "homepage": "https://github.com/luckyScript/JSON_with_comments_Parser#readme",
   "dependencies": {
+    "@types/debug": "0.0.30",
     "@types/strip-json-comments": "0.0.30",
+    "debug": "^3.1.0",
     "strip-json-comments": "^2.0.1"
   },
   "devDependencies": {

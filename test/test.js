@@ -15,8 +15,7 @@ describe('parser', function() {
     it('should equal {} -> []', function() {
         let json1 = `
         {
-            // test
-            "a":"b" //ttt
+            "a": [1,2,3] //ttt
         }`
         assert.equal(JSON.stringify(parse(json1)), '{}');
     });
