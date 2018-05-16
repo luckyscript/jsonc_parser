@@ -218,7 +218,7 @@ let parse_number = (value:string) => {
     return {
         value: value.substr(0, p),
         type: 'Number',
-        len: p+1
+        len: p
     }
 }
 
