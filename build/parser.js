@@ -17,11 +17,17 @@
         if (!check_valid(json))
             throw new Error("Not valid JSON");
         if (json[0] === '{') {
-            return parse_object(json).value;
+            return {
+                value: parse_object(json).value,
+                type: 'Object'
+            };
         }
         else if (json[0] == '[') {
             // array like json
-            return parse_value_array(json).children;
+            return {
+                value: parse_value_array(json).children || parse_value_array(json).value,
+                type: 'Array'
+            };
         }
         else {
             // if comment is before json, throw error
@@ -185,9 +191,6 @@
         for (var depth = 1; depth !== 0; p++) {
             if (value[p] == ',')
                 p++;
-            // console.log(value.substr(p))
-            // console.log(parse_value(value.substr(p)));
-            console.log(value.substr(p));
             if (value[p] != ']') {
                 var val = parse_value(value.substr(p));
                 tree.value = val.value;
@@ -203,35 +206,11 @@
             if (value[p] == ']')
                 depth--;
         }
-        console.log('result', result);
         return {
             value: value.substr(0, p),
             children: result,
             type: 'Array',
             len: p
-        };
-    };
-    var parse_value_array2 = function (value) {
-        var p = 0;
-        p++;
-        p = skip_whitespace_1.default(value, p);
-        if (value[p] == ']') {
-            return {
-                value: '[]',
-                type: 'Array',
-                len: p + 1
-            };
-        }
-        for (var depth = 1; depth !== 0; p++) {
-            if (value[p] == '[')
-                depth++;
-            if (value[p] == ']')
-                depth--;
-        }
-        return {
-            value: value.substr(0, p),
-            type: 'Array',
-            len: p + 1
         };
     };
     var parse_number = function (value) {

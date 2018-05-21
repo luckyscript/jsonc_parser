@@ -16,10 +16,16 @@ function parse (json:string):any {
     if(!check_valid(json))
         throw new Error("Not valid JSON");
     if(json[0] === '{') {
-        return parse_object(json).value;
+        return {
+            value: parse_object(json).value, 
+            type: 'Object'
+        };
     } else if(json[0] == '[') {
         // array like json
-        return parse_value_array(json).children;
+        return {
+            value: parse_value_array(json).children||parse_value_array(json).value,
+            type: 'Array'
+        };
     } else {
         // if comment is before json, throw error
         throw new Error(`unsupport input: ${json}`)
@@ -187,9 +193,6 @@ let parse_value_array = (value:string) => {
     for (let depth = 1;depth !== 0;p++) {
         if(value[p] == ',')
             p++;
-        // console.log(value.substr(p))
-        // console.log(parse_value(value.substr(p)));
-        console.log(value.substr(p));
         if(value[p] != ']') {
             let val = parse_value(value.substr(p));
             tree.value = val.value;
@@ -205,35 +208,11 @@ let parse_value_array = (value:string) => {
         if(value[p] == ']')
             depth--;
     }
-    console.log('result' ,result);
     return {
         value: value.substr(0, p),
         children: result,
         type: 'Array',
         len: p
-    }
-}
-let parse_value_array2 = (value:string) => {
-    let p = 0;
-    p++;
-    p = skip_whitespace(value, p);
-    if(value[p] == ']') {
-        return {
-            value: '[]',
-            type: 'Array',
-            len: p+1
-        }
-    }
-    for (let depth = 1;depth !== 0;p++) {
-        if(value[p] == '[')
-            depth++;
-        if(value[p] == ']')
-            depth--;
-    }
-    return {
-        value: value.substr(0, p),
-        type: 'Array',
-        len: p+1
     }
 }
 let parse_number = (value:string) => {
