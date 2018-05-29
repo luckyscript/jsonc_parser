@@ -1,6 +1,6 @@
 {
   "name": "json_with_comments_parser",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "A parser parse Json_with_comment to AST",
   "main": "./build/index.js",
   "scripts": {
