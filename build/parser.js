@@ -125,7 +125,7 @@
                 depth++;
             if (value[pointer] == '}')
                 depth--;
-            console.log(pointer, value[pointer], depth, value[pointer], (value[pointer] == '}'));
+            // console.log(pointer, value[pointer], depth,value[pointer],(value[pointer] == '}'))
         }
         return {
             value: result,
@@ -198,15 +198,20 @@
             if (value[p] == ',')
                 p++;
             if (value[p] != ']') {
-                console.log(value.substr(p));
+                // console.log(value.substr(p))
                 var val = parse_value(value.substr(p));
-                tree.value = val.value;
-                tree.children = val.children;
+                if (val.type == 'Object') {
+                    tree.children = val.value;
+                }
+                else {
+                    tree.value = val.value;
+                    tree.children = val.children;
+                }
                 tree.type = val.type;
                 tree.key = key;
                 result.push(JSON.parse(JSON.stringify(tree)));
                 p += val.len;
-                console.log(val.len);
+                // console.log(val.len)
             }
             key++;
             if (value[p] == '[')
