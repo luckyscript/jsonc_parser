@@ -189,6 +189,7 @@
             };
         }
         for (var depth = 1; depth !== 0; p++) {
+            p = skip_whitespace_1.default(value, p);
             if (value[p] == ',')
                 p++;
             if (value[p] != ']') {

@@ -191,6 +191,7 @@ let parse_value_array = (value:string) => {
         }
     }
     for (let depth = 1;depth !== 0;p++) {
+        p = skip_whitespace(value, p);
         if(value[p] == ',')
             p++;
         if(value[p] != ']') {

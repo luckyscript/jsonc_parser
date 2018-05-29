@@ -1,14 +1,18 @@
 let assert = require('assert');
 let {parse} = require('../build/index');
+const { expect } = require('chai');
 
 describe('parser', function() {
     assert.equal()
     it('Arraylike: []', function() {
-        let json1 = `[]`
-        assert.equal(JSON.stringify(parse(json1)), '{"value":"[]","type":"Array"}');
+        let json = `[]`
+        let input = parse(json)
+        let output = {value:"[]",type:"Array"};
+        expect(input).to.deep.equal(output)
+        // assert.equal(JSON.stringify(parse(json1)), '{"value":"[]","type":"Array"}');
     });
     it(`Arraylike: [1, [2]]`, function() {
-        let json1 = `[1, [2]]`
+        let json = `[1, [2]]`
         assert.equal(JSON.stringify(parse(json1)), '{"value":[{"key":0,"value":"1","type":"Number"},{"key":1,"value":"[2]","children":[{"key":0,"value":"2","type":"Number"}],"type":"Array"}],"type":"Array"}');
     });
     it(`Objectlike: {}`, function() {
