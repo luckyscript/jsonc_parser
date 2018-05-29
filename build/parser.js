@@ -56,10 +56,10 @@
             return { value: result };
         }
         for (var depth = 1; pointer < len && depth !== 0; pointer++) {
+            pointer = skip_whitespace_1.default(value, pointer);
             // key start
-            var char = value[pointer];
             if (inKey) {
-                if (char == '"') {
+                if (value[pointer] == '"') {
                     // key end
                     inKey = false;
                     nextType = 'value';
@@ -69,11 +69,11 @@
                     commentFlag = true;
                 }
                 else {
-                    stack.push(char);
+                    stack.push(value[pointer]);
                 }
             }
-            if (char == '"' && nextType == 'key') {
-                // stack.push(char)
+            if (value[pointer] == '"' && nextType == 'key') {
+                // stack.push(value[pointer])
                 inKey = true;
                 // result.push(JSON.parse(JSON.stringify(tree))
                 tree = {
@@ -93,16 +93,19 @@
                 else {
                     tree.value = val.value;
                 }
+                if (val.type == 'Array') {
+                    tree.children = val.children;
+                }
                 tree.type = val.type;
                 result.push(JSON.parse(JSON.stringify(tree)));
                 inValue = false;
                 nextType = 'key';
             }
-            if (char == ':' && !inValue && !inComment) {
+            if (value[pointer] == ':' && !inValue && !inComment) {
                 pointer = skip_whitespace_1.default(value, pointer);
                 inValue = true;
             }
-            if (char == '/' && value[pointer - 1] == '/' && !inValue && !inKey && commentFlag) {
+            if (value[pointer] == '/' && value[pointer - 1] == '/' && !inValue && !inKey && commentFlag) {
                 // sigle line comment start
                 var comment = parse_single_comment(value.substr(pointer));
                 pointer += comment.len;
@@ -110,7 +113,7 @@
                 result.pop();
                 result.push(JSON.parse(JSON.stringify(tree)));
             }
-            if (char == '*' && value[pointer - 1] == '/' && !inValue && !inKey) {
+            if (value[pointer] == '*' && value[pointer - 1] == '/' && !inValue && !inKey) {
                 // sigle line comment start
                 var comment = parse_multi_comment(value.substr(pointer));
                 pointer += comment.len;
@@ -118,14 +121,15 @@
                 result.pop();
                 result.push(JSON.parse(JSON.stringify(tree)));
             }
-            if (char == '{')
+            if (value[pointer] == '{')
                 depth++;
-            if (char == '}')
+            if (value[pointer] == '}')
                 depth--;
+            console.log(pointer, value[pointer], depth, value[pointer], (value[pointer] == '}'));
         }
         return {
             value: result,
-            len: pointer + 1,
+            len: pointer,
             type: 'Object'
         };
     };
@@ -149,6 +153,7 @@
     };
     var parse_value = function (value) {
         value = value.trim();
+        // console.log(value)
         switch (value[0]) {
             // bool
             case 't':
@@ -193,6 +198,7 @@
             if (value[p] == ',')
                 p++;
             if (value[p] != ']') {
+                console.log(value.substr(p));
                 var val = parse_value(value.substr(p));
                 tree.value = val.value;
                 tree.children = val.children;
@@ -200,6 +206,7 @@
                 tree.key = key;
                 result.push(JSON.parse(JSON.stringify(tree)));
                 p += val.len;
+                console.log(val.len);
             }
             key++;
             if (value[p] == '[')
@@ -222,7 +229,7 @@
             p++;
         else {
             if (!ISDIGIT1TO9(value[p]))
-                throw new Error('not a valid number');
+                throw new Error(value + ": not a valid number");
             for (p++; ISDIGIT(value[p]); p++)
                 ;
         }

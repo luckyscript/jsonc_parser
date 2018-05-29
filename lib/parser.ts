@@ -55,10 +55,10 @@ let parse_object = (value:string):Array<Tree>|any => {
         return {value: result};
     }
     for(let depth = 1;pointer < len && depth !== 0;pointer++) {
+        pointer = skip_whitespace(value, pointer);
         // key start
-        let char:string = value[pointer];
         if(inKey) {
-            if(char == '"') {
+            if(value[pointer] == '"') {
                 // key end
                 inKey = false;
                 nextType = 'value';
@@ -67,11 +67,11 @@ let parse_object = (value:string):Array<Tree>|any => {
                 pointer = skip_whitespace(value, pointer);
                 commentFlag = true;
             } else {
-                stack.push(char);
+                stack.push(value[pointer]);
             }
         }
-        if(char == '"' && nextType == 'key') {
-            // stack.push(char)
+        if(value[pointer] == '"' && nextType == 'key') {
+            // stack.push(value[pointer])
             inKey = true;
             // result.push(JSON.parse(JSON.stringify(tree))
             tree = {
@@ -90,16 +90,19 @@ let parse_object = (value:string):Array<Tree>|any => {
             } else {
                 tree.value = val.value;
             }
+            if(val.type == 'Array') {
+                tree.children = val.children;
+            }
             tree.type = val.type;
             result.push(JSON.parse(JSON.stringify(tree)));
             inValue = false;
             nextType = 'key';
         }
-        if(char == ':' && !inValue && !inComment) {
+        if(value[pointer] == ':' && !inValue && !inComment) {
             pointer = skip_whitespace(value, pointer);
             inValue = true;
         }
-        if(char == '/' && value[pointer - 1] == '/' && !inValue && !inKey && commentFlag) {
+        if(value[pointer] == '/' && value[pointer - 1] == '/' && !inValue && !inKey && commentFlag) {
             // sigle line comment start
             let comment = parse_single_comment(value.substr(pointer));
 
@@ -108,7 +111,7 @@ let parse_object = (value:string):Array<Tree>|any => {
             result.pop();
             result.push(JSON.parse(JSON.stringify(tree)));
         }
-        if(char == '*' && value[pointer - 1] == '/' && !inValue && !inKey) {
+        if(value[pointer] == '*' && value[pointer - 1] == '/' && !inValue && !inKey) {
              // sigle line comment start
              let comment = parse_multi_comment(value.substr(pointer));
 
@@ -117,12 +120,13 @@ let parse_object = (value:string):Array<Tree>|any => {
              result.pop();
              result.push(JSON.parse(JSON.stringify(tree)));
         }
-        if(char == '{') depth++;
-        if(char == '}') depth--;
+        if(value[pointer] == '{') depth++;
+        if(value[pointer] == '}') depth--;
+        console.log(pointer, value[pointer], depth,value[pointer],(value[pointer] == '}'))
     }
     return {
         value: result,
-        len: pointer + 1,
+        len: pointer,
         type: 'Object'
     };
 
@@ -150,6 +154,7 @@ let parse_multi_comment = function (value: string) {
 
 let parse_value = function (value: string) {
     value = value.trim();
+    // console.log(value)
     switch(value[0]) {
         // bool
         case 't': 
@@ -195,6 +200,7 @@ let parse_value_array = (value:string) => {
         if(value[p] == ',')
             p++;
         if(value[p] != ']') {
+            console.log(value.substr(p))
             let val = parse_value(value.substr(p));
             tree.value = val.value;
             tree.children = val.children;
@@ -202,6 +208,7 @@ let parse_value_array = (value:string) => {
             tree.key = key;
             result.push(JSON.parse(JSON.stringify(tree)))
             p+=val.len;
+            console.log(val.len)
         }
         key++;
         if(value[p] == '[')
@@ -224,7 +231,7 @@ let parse_number = (value:string) => {
         p++;
     else {
         if(!ISDIGIT1TO9(value[p]))
-            throw new Error('not a valid number');
+            throw new Error(`${value}: not a valid number`);
         for(p++; ISDIGIT(value[p]); p++);
     }
     if (value[p] == '.') {

@@ -13,7 +13,7 @@ describe('parser', function() {
     });
     it(`Arraylike: [1, [2]]`, function() {
         let json = `[1, [2]]`
-        assert.equal(JSON.stringify(parse(json1)), '{"value":[{"key":0,"value":"1","type":"Number"},{"key":1,"value":"[2]","children":[{"key":0,"value":"2","type":"Number"}],"type":"Array"}],"type":"Array"}');
+        assert.equal(JSON.stringify(parse(json)), '{"value":[{"key":0,"value":"1","type":"Number"},{"key":1,"value":"[2]","children":[{"key":0,"value":"2","type":"Number"}],"type":"Array"}],"type":"Array"}');
     });
     it(`Objectlike: {}`, function() {
         let json1 = `{}`
@@ -21,7 +21,7 @@ describe('parser', function() {
     });
     it(`Objectlike: {"arra":[1, [2]]}`, function() {
         let json1 = `{"arra":[1, [2]]}`
-        assert.equal(JSON.stringify(parse(json1)), '{"value":[{"key":"arra","value":"[1, [2]","children":[],"type":"Array","comment":""}],"type":"Object"}');
+        assert.equal(JSON.stringify(parse(json1)), '{"value":[{"key":"arra","value":"[1, [2]]","children":[{"key":0,"value":"1","type":"Number"},{"key":1,"value":"[2]","children":[{"key":0,"value":"2","type":"Number"}],"type":"Array"}],"type":"Array","comment":""}],"type":"Object"}');
     });
 
     it(`Objectlike: {"num":1}`, function() {
@@ -43,6 +43,11 @@ describe('parser', function() {
             "null":null //test
             }`
         assert.equal(JSON.stringify(parse(json1)), '{"value":[{"key":"null","value":"null","children":[],"type":"Null","comment":"test"}],"type":"Object"}');
+    });
+    
+    it(`Objectlike: {"null":null //test}`, function() {
+        let json1 = `{"a":[1,2,{"a":1, "b": "c"}]}`
+        assert.equal(JSON.stringify(parse(json1)), '{"value":[{"key":"a","value":"[1,2,{\"a\":1, \"b\": \"c\"}]","children":[{"key":0,"value":"1","type":"Number"},{"key":1,"value":"2","type":"Number"},{"key":2,"value":[{"key":"a","value":"1","children":[],"type":"Number","comment":""},{"key":"b","value":"c","children":[],"type":"String","comment":""}],"type":"Object"}],"type":"Array","comment":""}],"type":"Object"}');
     });
 })
 
