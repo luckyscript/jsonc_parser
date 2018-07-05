@@ -52,7 +52,10 @@ let parse_object = (value:string):Array<Tree>|any => {
     pointer = skip_whitespace(value, pointer);
     if(value[pointer] == '}') {
         result = [];
-        return {value: result};
+        return {
+            value: result, 
+            type: 'Object'
+        };
     }
     for(let depth = 1;pointer < len && depth !== 0;pointer++) {
         pointer = skip_whitespace(value, pointer);
