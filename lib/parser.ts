@@ -18,7 +18,8 @@ function parse (json:string):any {
     if(json[0] === '{') {
         return {
             value: parse_object(json).value, 
-            type: 'Object'
+            type: 'Object',
+            len: pointer + 1
         };
     } else if(json[0] == '[') {
         // array like json
