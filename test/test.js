@@ -1,6 +1,6 @@
 let assert = require('assert');
+let { expect } = require('chai');
 let {parse} = require('../build/index');
-const { expect } = require('chai');
 
 describe('parser', function() {
     assert.equal()
@@ -45,9 +45,15 @@ describe('parser', function() {
         assert.equal(JSON.stringify(parse(json1)), '{"value":[{"key":"null","value":"null","children":[],"type":"Null","comment":"test"}],"type":"Object"}');
     });
     
-    it(`Objectlike: {"null":null //test}`, function() {
+    it(`Objectlike: {"a":[1,2,{"a":1, "b": "c"}]}`, function() {
         let json1 = `{"a":[1,2,{"a":1, "b": "c"}]}`
-        assert.equal(JSON.stringify(parse(json1)), '{"value":[{"key":"a","value":"[1,2,{\"a\":1, \"b\": \"c\"}]","children":[{"key":0,"value":"1","type":"Number"},{"key":1,"value":"2","type":"Number"},{"key":2,"value":[{"key":"a","value":"1","children":[],"type":"Number","comment":""},{"key":"b","value":"c","children":[],"type":"String","comment":""}],"type":"Object"}],"type":"Array","comment":""}],"type":"Object"}');
+        let tree = {"value":[{"key":"a","value":"[1,2,{\"a\":1, \"b\": \"c\"}]","children":[{"key":0,"value":"1","type":"Number"},{"key":1,"value":"2","type":"Number"},{"key":2,"value":"2","children":[{"key":"a","value":"1","children":[],"type":"Number","comment":""},{"key":"b","value":"c","children":[],"type":"String","comment":""}],"type":"Object"}],"type":"Array","comment":""}],"type":"Object"}
+        expect(parse(json1)).to.deep.equal(tree)
+    });
+    
+    it(`Objectlike: {"a":{},"b": ""}`, function() {
+        let json1 = `{"a":{}, "b" : ""}`
+        assert.equal(JSON.stringify(parse(json1)), '{"value":[{"key":"a","value":"","children":[],"type":"Object","comment":""},{"key":"b","value":"","children":[],"type":"String","comment":""}],"type":"Object"}');
     });
 })
 

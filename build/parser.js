@@ -10,7 +10,7 @@ function parse(json) {
     if (json[0] === '{') {
         return {
             value: parse_object(json).value,
-            type: 'Object'
+            type: 'Object',
         };
     }
     else if (json[0] == '[') {
@@ -44,7 +44,11 @@ var parse_object = function (value) {
     pointer = skip_whitespace_1.default(value, pointer);
     if (value[pointer] == '}') {
         result = [];
-        return { value: result };
+        return {
+            value: result,
+            type: 'Object',
+            len: pointer + 1
+        };
     }
     for (var depth = 1; pointer < len && depth !== 0; pointer++) {
         pointer = skip_whitespace_1.default(value, pointer);

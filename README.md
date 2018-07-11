@@ -20,9 +20,10 @@ parse(`{
 ```
 
 ## TODO:
-1. parser ArrayLike json [finish]
-2. comment parser bugs fix [finish]
-3. support mutiline comments [finish]
+- [x] parser ArrayLike json [finish]
+- [x] comment parser bugs fix [finish]
+- [x] support mutiline comments [finish]
+- [ ] rewrite test code
 
 ## Q:
 1. How to take difference for ArrayLike JSON and Object like json

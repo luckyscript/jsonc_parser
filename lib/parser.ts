@@ -19,7 +19,6 @@ function parse (json:string):any {
         return {
             value: parse_object(json).value, 
             type: 'Object',
-            len: pointer + 1
         };
     } else if(json[0] == '[') {
         // array like json
@@ -55,7 +54,8 @@ let parse_object = (value:string):Array<Tree>|any => {
         result = [];
         return {
             value: result, 
-            type: 'Object'
+            type: 'Object',
+            len: pointer + 1
         };
     }
     for(let depth = 1;pointer < len && depth !== 0;pointer++) {
