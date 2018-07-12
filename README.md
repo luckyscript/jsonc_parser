@@ -1,5 +1,7 @@
 # JSON_with_comments_Parser
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/luckyscript/json_parser.svg)](https://greenkeeper.io/)
+
 ## use
 
 ```sh
