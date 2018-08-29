@@ -66,7 +66,7 @@ let parse_object = (value:string):Array<Tree>|any => {
                 // key end
                 inKey = false;
                 nextType = 'value';
-                tree.key = stack.join("");
+                tree.key = stack.join("").replace(/"/g, '\\\"');
                 stack = [];
                 pointer = skip_whitespace(value, pointer);
                 commentFlag = true;
@@ -74,7 +74,7 @@ let parse_object = (value:string):Array<Tree>|any => {
                 stack.push(value[pointer]);
             }
         }
-        if(value[pointer] == '"' && nextType == 'key') {
+        if(value[pointer] == '"' && nextType == 'key' && !inKey) {
             // stack.push(value[pointer])
             inKey = true;
             // result.push(JSON.parse(JSON.stringify(tree))
