@@ -1,2 +1,9 @@
+# npm files
+.package-lock.json
 node_modules
+
+# Editor file
 .vscode
+
+# system file
+.DS_Store

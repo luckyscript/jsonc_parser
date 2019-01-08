@@ -1,6 +1,6 @@
 let assert = require('assert');
 let { expect } = require('chai');
-let {parse} = require('../build/index');
+let { parse } = require('../lib/index');
 
 describe('parser', function() {
     assert.equal()
