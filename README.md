@@ -17,15 +17,24 @@ parse('{"a": "b"}')
 ```js
 parse(`{
             "a":"b" //comment
-        }`)
+        }`);
 
-// [{"key":"a","children":[],"value":"b","type":"String","comment":"comment"}]
+result: 
+{ 
+    value: [
+        { 
+            "key": "a",
+            "children":[],
+            "value":"b",
+            "type":"String",
+            "comment":"comment"
+        }
+    ],
+    type: 'Object'
+}
 ```
 
 ## TODO:
-- [x] parser ArrayLike json [finish]
-- [x] comment parser bugs fix [finish]
-- [x] support mutiline comments [finish]
 - [ ] rewrite test code
 
 ## Q:

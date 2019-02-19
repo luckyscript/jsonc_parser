@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint lib",
     "lint:fix": "eslint --fix lib",
-    "test": "eslint lib && nyc mocha",
+    "test": "eslint --fix lib && nyc mocha",
     "cov": "nyc report --reporter=html"
   },
   "repository": {
