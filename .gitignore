@@ -5,5 +5,10 @@ node_modules
 # Editor file
 .vscode
 
+# test file
+
+.nyc_output
+coverage
+
 # system file
 .DS_Store
