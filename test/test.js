@@ -2,6 +2,8 @@ let assert = require('assert');
 let { expect } = require('chai');
 let { parse } = require('../lib/index');
 
+require('./array/test')
+
 describe('parser', function() {
     assert.equal()
     it('Arraylike: []', function() {
