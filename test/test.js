@@ -44,6 +44,12 @@ describe('parser', function() {
         let json1 = '{"str": "test"}';
         assert.equal(JSON.stringify(parse(json1)), '{"value":[{"key":"str","value":"test","children":[],"type":"String","comment":""}],"type":"Object"}');
     });
+
+    it('Objectlike: {"str": \'test\'}', function() {
+        let json1 = `{"str": 'test'}`;
+        assert.equal(JSON.stringify(parse(json1)), '{"value":[{"key":"str","value":"test","children":[],"type":"String","comment":""}],"type":"Object"}');
+    });
+
     it('Objectlike: {"null":null}', function() {
         let json1 = '{"null":null}';
         assert.equal(JSON.stringify(parse(json1)), '{"value":[{"key":"null","value":"null","children":[],"type":"Null","comment":""}],"type":"Object"}');
@@ -62,6 +68,13 @@ describe('parser', function() {
     it('Objectlike: {"null":null //test}', function() {
         let json1 = `{
             "null":null //test
+            }`;
+        assert.equal(JSON.stringify(parse(json1)), '{"value":[{"key":"null","value":"null","children":[],"type":"Null","comment":"test"}],"type":"Object"}');
+    });
+
+    it('Objectlike: {"null":null /*test*/}', function() {
+        let json1 = `{
+            "null":null /*test*/
             }`;
         assert.equal(JSON.stringify(parse(json1)), '{"value":[{"key":"null","value":"null","children":[],"type":"Null","comment":"test"}],"type":"Object"}');
     });
