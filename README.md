@@ -1,7 +1,7 @@
 # JSON_with_comments_Parser
 
 ![](https://travis-ci.com/luckyscript/json_parser.svg?branch=master)
-![](https://coveralls.io/repos/github/luckyscript/json_parser/badge.svg?branch=dev)
+[![Coverage Status](https://coveralls.io/repos/github/luckyscript/json_parser/badge.svg?branch=master)](https://coveralls.io/github/luckyscript/json_parser?branch=master)
 
 ## use
 
