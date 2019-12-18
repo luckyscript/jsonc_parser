@@ -35,11 +35,7 @@ result:
 ```
 
 ## TODO:
-- [ ] rewrite test code
-
-## Q:
-1. How to take difference for ArrayLike JSON and Object like json
-2. String does not support unicode chars
+[ ] throw Exception friendly
 
 # LICENSE
 
